@@ -2,19 +2,22 @@ using System;
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace Project.Networking.SMB {
-
+namespace Project.Networking.SMB
+{
     /// <summary>
     /// 
     /// </summary>
-    public sealed class SMBConnectionInfo {
-        public IPAddress IpAddress { get; }
+    [Serializable]
+    public sealed class SMBConnectionInfo
+    {
+        public string IpAddress { get; }
         public string Username { get; }
         public string Password { get; }
         public string ShareName { get; }
 
 
-        public SMBConnectionInfo(IPAddress ipAddress, string username, string password, string shareName) {
+        public SMBConnectionInfo(IPAddress ipAddress, string username, string password, string shareName)
+        {
             // Validate IP address (must not be null or IPAddress.None)
             if (ipAddress == null || ipAddress.Equals(IPAddress.None))
                 throw new ArgumentException("Invalid IP address.", nameof(ipAddress));
@@ -33,10 +36,24 @@ namespace Project.Networking.SMB {
             if (!Regex.IsMatch(shareName, @"^[\w\-]+$"))
                 throw new ArgumentException("Share name can only contain alphanumeric characters, underscores, and hyphens.", nameof(shareName));
 
-            IpAddress = ipAddress;
+            IpAddress = ipAddress.ToString();
             Username = username;
             Password = password;
             ShareName = shareName;
+        }
+
+        public override string ToString()
+        {
+#if UNITY_EDITOR
+            return $"smb:\n" +
+                   $"IP: {IpAddress}\n" +
+                   $"Share: {ShareName}\n" +
+                   $"User: {Username}\n" +
+                   $"Pass: {Password ?? "(null)"}";
+#else
+    return $"smb://{Username}:{(string.IsNullOrEmpty(Password) ? "*****" : "*****")}@{IpAddress}/{ShareName}";
+#endif
+
         }
     }
 
