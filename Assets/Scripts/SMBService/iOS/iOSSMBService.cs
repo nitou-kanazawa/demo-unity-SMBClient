@@ -1,4 +1,4 @@
-#if UNITY_IOS || UNITY_EDITOR
+#if UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
 using System;
 using System.Threading.Tasks;
 using NativePlugin;

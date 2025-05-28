@@ -2,11 +2,13 @@ import Foundation
 
 // MARK: -
 
-enum SMBError: Error {
-    case connectionFailed
-    case loginFailed
-    case fileListingFailed
-    case unknown
+enum SMBError : Int32, Error {
+    case connectionFailed   = 1
+    case loginFailed        = 2
+    case listFailed       = 3
+    case unknown          = -1
+    
+    var code: Int32 { rawValue }
     
     // 文字列に変換する
     var localizedDescription: String {
@@ -15,7 +17,7 @@ enum SMBError: Error {
             return "SMB connection failed."
         case .loginFailed:
             return "SMB login failed."
-        case .fileListingFailed:
+        case .listFailed:
             return "Failed to list files in the directory."
         case .unknown:
             return "An unknown error occurred."

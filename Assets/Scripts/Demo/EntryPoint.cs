@@ -27,7 +27,8 @@ namespace Demo {
 				userName,
 				password,
 				shareName);
-			Debug.Log(info);
+			string configJson = JsonUtility.ToJson(info);
+			Debug.Log(configJson);
 			SMBService.SetConfig(info);
 			
 			try {

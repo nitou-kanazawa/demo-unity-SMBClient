@@ -300,7 +300,7 @@ namespace Project.Networking.SMB.Windows {
 					LoginOrThrow();
 					using (LoginScope()) {
 						// Connect to `Shared Resource`
-						ISMBFileStore fileStore = _client.TreeConnect(_config.ShareName, out var connectStatus);    // return resource handle
+						ISMBFileStore fileStore = _client.TreeConnect(_config.shareName, out var connectStatus);    // return resource handle
 						if (connectStatus != NTStatus.STATUS_SUCCESS)
 							throw new SMBException(ErrorCode.FileOperation, $"Tree connection failed with status: {connectStatus}");
 
@@ -317,7 +317,7 @@ namespace Project.Networking.SMB.Windows {
 		}
 
 		private void ConnectOrThrow() {
-			var isConnected = _client.Connect(_config.IpAddress, DefaultTransportType, TimeoutMillSeconds);
+			var isConnected = _client.Connect(_config.ipAddress, DefaultTransportType, TimeoutMillSeconds);
 			if (!isConnected) {
 				var errorCode = ErrorCode.Connection;
 				var errorMessage = "Failed to connect to SMB server.";
@@ -327,7 +327,7 @@ namespace Project.Networking.SMB.Windows {
 		}
 
 		private void LoginOrThrow() {
-			NTStatus loginStatus = _client.Login(string.Empty, _config.Username, _config.Password);
+			NTStatus loginStatus = _client.Login(string.Empty, _config.userName, _config.password);
 			if (loginStatus != NTStatus.STATUS_SUCCESS) {
 				var errorCode = ErrorMapper.FromNtStatus(loginStatus);
 				var errorMessage = $"SMB login failed with status: {loginStatus}";

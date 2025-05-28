@@ -22,8 +22,7 @@ namespace NativePlugin.Utils
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void OnErrorCallback(
             [MarshalAs(UnmanagedType.I4)] int instanceId,
-            [MarshalAs(UnmanagedType.I4)] int errorCode,
-            [MarshalAs(UnmanagedType.LPStr), In] string errorMessage
+            [MarshalAs(UnmanagedType.I4)] int errorCode
         );
         #endregion
 
@@ -82,14 +81,14 @@ namespace NativePlugin.Utils
             }
         }
 
-        private void SetError(int errorCode, string errorMessage)
+        private void SetError(int errorCode)
         {
             lock (_syncRoot)
             {
                 if (Status == AsyncOperationStatus.Running)
                 {
                     Status = AsyncOperationStatus.Failed;
-                    OperationException = new InvalidOperationException(errorMessage);
+                    OperationException = new InvalidOperationException($"errorCode: {errorCode}");
                     _tcs.SetException(OperationException);
                 }
                 Dispose();
@@ -125,10 +124,10 @@ namespace NativePlugin.Utils
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnErrorCallback))]
-        private static void StaticErrorCallback(int id, int errorCode, string errorMessage)
+        private static void StaticErrorCallback(int id, int errorCode)
         {
             var handle = GetHandle<StringAsyncOperationHandle>(id);
-            handle.SetError(errorCode, errorMessage);
+            handle.SetError(errorCode);
         }
 
         #endregion

@@ -15,7 +15,7 @@ namespace Project.Networking.SMB {
 		private static INativeSMBService _client;
 
 		static SMBService() {
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
     		// iOS用の処理
             _client = new iOS.iOSSMBService();   // 改修版
 #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
@@ -23,6 +23,7 @@ namespace Project.Networking.SMB {
 			_client = new Windows.WindowsSMBService();
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
     		// Mac用の処理（Editor含む）
+            _client = new iOS.iOSSMBService();   // 改修版
 #else
     		// その他
 #endif
@@ -119,7 +120,7 @@ namespace Project.Networking.SMB {
 		private static void SetDefaultConfig() {
 			var config = new SMBConnectionInfo(
 				ipAddress: IPAddress.Parse("192.168.1.100"),
-				username: "username",
+				userName: "username",
 				password: "password",
 				shareName: "WORK");
 			SetConfig(config);

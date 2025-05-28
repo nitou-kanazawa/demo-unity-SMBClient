@@ -1,3 +1,4 @@
+#if UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
 using UnityEngine;
 using System;
 using System.Threading;
@@ -14,6 +15,11 @@ namespace NativePlugin {
 #else
 		private const string DLL_NAME = "SMBWrapper";
 #endif
+
+		static NativeMethods()
+		{
+			Debug.Log(DLL_NAME);
+		}
 
 		/// ----------------------------------------------------------------------------
 		#region Native Function
@@ -122,3 +128,4 @@ namespace NativePlugin {
 
 	}
 }
+#endif

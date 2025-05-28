@@ -8,7 +8,7 @@ public func getFileNames(
     path: UnsafePointer<CChar>,
     instanceId: Int32,
     onSuccess: @escaping @Sendable Callback_withString,
-    onError: @escaping @Sendable Callback_withIntString
+    onError: @escaping @Sendable Callback_withInt
 ) {
     let pathString = String(cString: path)
     let configString = String(cString: configJson)
@@ -16,7 +16,7 @@ public func getFileNames(
     // configJsonをデコードしてSMBConnectionConfigを作成
     guard let config = decodeSMBConnectionConfig(from: configString) else {
         print("Failed to decode SMB connection config")
-        onError(instanceId, -1, "Failed to decode SMB connection config".cString(using: .utf8)!)
+        onError(instanceId, -1)
         return
     }
     
@@ -28,15 +28,14 @@ public func getFileNames(
             let fileList = files.joined(separator: ",")
             onSuccess(instanceId, fileList.cString(using: .utf8)!)
         }
-        catch let error as SMBError {
-            print("SMB Error: \(error.localizedDescription)")
-            let errorInfo = ErrorInfo(code: Int32(error.hashValue), message: error.localizedDescription)
-            onError(instanceId, errorInfo.code, errorInfo.message.cString(using: .utf8)!)
+        catch let smbError as SMBError {
+            print("SMB Error: \(smbError.localizedDescription)")
+            onError(instanceId, smbError.code)
         }
         catch let error {
             let unknownError = ErrorInfo(code: -1, message: "An unknown error | \(error.localizedDescription)")
+            onError(instanceId, unknownError.code)
             print("Unknown Error: \(unknownError.message)")
-            onError(instanceId, unknownError.code, unknownError.message.cString(using: .utf8)!)
         }
     }
 }
@@ -51,7 +50,7 @@ public func downloadFile(
     localPath: UnsafePointer<CChar>,
     instanceId: Int32,      // Instance id
     onSuccess: @escaping @Sendable Callback,
-    onError: @escaping @Sendable Callback_withIntString)
+    onError: @escaping @Sendable Callback_withInt)
 {
     let remotePathString = String(cString: remotePath)
     let localPathString = String(cString: localPath)
@@ -60,7 +59,7 @@ public func downloadFile(
     // configJsonをデコードしてSMBConnectionConfigを作成
     guard let config = decodeSMBConnectionConfig(from: configString) else {
         print("Failed to decode SMB connection config")
-        onError(instanceId, -1, "Failed to decode SMB connection config".cString(using: .utf8)!)
+        onError(instanceId, -1)
         return
     }
     
@@ -72,15 +71,14 @@ public func downloadFile(
             try await smbService.downloadFile(filePath: remotePathString, localURL: localURL)
             onSuccess(instanceId)
         }
-        catch let error as SMBError {
-            print("SMB Error: \(error.localizedDescription)")
-            let errorInfo = ErrorInfo(code: Int32(error.hashValue), message: error.localizedDescription)
-            onError(instanceId, errorInfo.code, errorInfo.message.cString(using: .utf8)!)
+        catch let smbError as SMBError {
+            print("SMB Error: \(smbError.localizedDescription)")
+            onError(instanceId, smbError.code)
         }
         catch let error {
             let unknownError = ErrorInfo(code: -1, message: "An unknown error | \(error.localizedDescription)")
             print("Unknown Error: \(unknownError.message)")
-            onError(instanceId, unknownError.code, unknownError.message.cString(using: .utf8)!)
+            onError(instanceId, unknownError.code)
         }
     }
 }
@@ -95,7 +93,7 @@ public func uploadFile(
     remotePath: UnsafePointer<CChar>,
     instanceId: Int32,
     onSuccess: @escaping @Sendable Callback,
-    onError: @escaping @Sendable Callback_withIntString)
+    onError: @escaping @Sendable Callback_withInt)
 {
     let localPathString = String(cString: localPath)
     let remotePathString = String(cString: remotePath)
@@ -104,7 +102,7 @@ public func uploadFile(
     // configJsonをデコードしてSMBConnectionConfigを作成
     guard let config = decodeSMBConnectionConfig(from: configString) else {
         print("Failed to decode SMB connection config")
-        onError(instanceId, -1, "Failed to decode SMB connection config".cString(using: .utf8)!)
+        onError(instanceId, -1)
         return
     }
     
@@ -116,15 +114,14 @@ public func uploadFile(
             try await smbService.uploadFile(localURL: localURL, remotePath: remotePathString)
             onSuccess(instanceId)
         }
-        catch let error as SMBError {
-            print("SMB Error: \(error.localizedDescription)")
-            let errorInfo = ErrorInfo(code: Int32(error.hashValue), message: error.localizedDescription)
-            onError(instanceId, errorInfo.code, errorInfo.message.cString(using: .utf8)!)
+        catch let smbError as SMBError {
+            print("SMB Error: \(smbError.localizedDescription)")
+            onError(instanceId, smbError.code)
         }
         catch let error {
             let unknownError = ErrorInfo(code: -1, message: "An unknown error | \(error.localizedDescription)")
             print("Unknown Error: \(unknownError.message)")
-            onError(instanceId, unknownError.code, unknownError.message.cString(using: .utf8)!)
+            onError(instanceId, unknownError.code)
         }
     }
 }
@@ -138,7 +135,7 @@ public func deleteFile(
     remotePath: UnsafePointer<CChar>,
     instanceId: Int32,
     onSuccess: @escaping @Sendable Callback,
-    onError: @escaping @Sendable Callback_withIntString)
+    onError: @escaping @Sendable Callback_withInt)
 {
     let remotePathString = String(cString: remotePath)
     let configString = String(cString: configJson)
@@ -146,7 +143,7 @@ public func deleteFile(
     // configJsonをデコードしてSMBConnectionConfigを作成
     guard let config = decodeSMBConnectionConfig(from: configString) else {
         print("Failed to decode SMB connection config")
-        onError(instanceId, -1, "Failed to decode SMB connection config".cString(using: .utf8)!)
+        onError(instanceId, -1)
         return
     }
     
@@ -157,15 +154,14 @@ public func deleteFile(
             try await smbService.deleteFile(remotePath: remotePathString)
             onSuccess(instanceId)
         }
-        catch let error as SMBError {
-            print("SMB Error: \(error.localizedDescription)")
-            let errorInfo = ErrorInfo(code: Int32(error.hashValue), message: error.localizedDescription)
-            onError(instanceId, errorInfo.code, errorInfo.message.cString(using: .utf8)!)
+        catch let smbError as SMBError {
+            print("SMB Error: \(smbError.localizedDescription)")
+            onError(instanceId, smbError.code)
         }
         catch let error {
             let unknownError = ErrorInfo(code: -1, message: "An unknown error | \(error.localizedDescription)")
             print("Unknown Error: \(unknownError.message)")
-            onError(instanceId, unknownError.code, unknownError.message.cString(using: .utf8)!)
+            onError(instanceId, unknownError.code)
         }
     }
 }
