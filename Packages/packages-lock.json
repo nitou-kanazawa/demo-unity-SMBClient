@@ -212,6 +212,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.yasirkula.ingamedebugconsole": {
+      "version": "https://github.com/yasirkula/UnityIngameDebugConsole.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "caf88dd56504f4956a3f0433653a042b3c88f333"
+    },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
       "depth": 0,
